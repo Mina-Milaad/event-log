@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Realtime Event Logs</title>
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; padding: 12px; }
+    #logs { max-width: 1000px; margin-top: 12px; }
+    .log { border-bottom: 1px solid #eee; padding: 8px 0; }
+    .meta { color: #666; font-size: 12px; }
+    .desc { margin-top: 6px; }
+    #filters { margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+  <h2>Realtime Event Logs</h2>
+  <div id="filters">
+    <label>Event Type:
+      <select id="eventTypeFilter">
+        <option value="">All</option>
+        <option>login</option>
+        <option>create</option>
+        <option>update</option>
+        <option>delete</option>
+        <option>read</option>
+      </select>
+    </label>
+    <button id="clear">Clear</button>
+  </div>
+
+  <div id="logs"></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    const logsEl = document.getElementById("logs");
+    const eventTypeFilter = document.getElementById("eventTypeFilter");
+    const clearBtn = document.getElementById("clear");
+
+    function renderLog(log) {
+      const div = document.createElement("div");
+      div.className = "log";
+      div.dataset.eventType = log.eventType;
+
+      const t = new Date(log.createdAt).toLocaleString();
+      div.innerHTML = `
+        <div class="meta"><strong>${log.eventType}</strong> — ${log.method} ${log.endpoint} — ${t} — ${log.username || log.userId || "anonymous"}</div>
+        <div class="desc">${escapeHtml(log.description || "")}</div>
+        <details>
+          <summary>Details</summary>
+          <pre>${escapeHtml(JSON.stringify({ body: log.body, query: log.query, params: log.params }, null, 2))}</pre>
+        </details>
+      `;
+      return div;
+    }
+
+    function addLogToTop(log) {
+      const node = renderLog(log);
+      logsEl.insertBefore(node, logsEl.firstChild);
+      applyFilter();
+    }
+
+    socket.on("eventLog", (log) => {
+      addLogToTop(log);
+    });
+
+    // load recent logs on open
+    async function loadRecent() {
+      try {
+        const res = await fetch("/api/logs?limit=50");
+        const json = await res.json();
+        if (json.ok) {
+          json.logs.reverse().forEach(l => logsEl.appendChild(renderLog(l)));
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function applyFilter() {
+      const f = eventTypeFilter.value;
+      Array.from(document.querySelectorAll(".log")).forEach(el => {
+        el.style.display = (!f || el.dataset.eventType === f) ? "" : "none";
+      });
+    }
+
+    eventTypeFilter.addEventListener("change", applyFilter);
+    clearBtn.addEventListener("click", () => { logsEl.innerHTML = ""; });
+
+    function escapeHtml(s) { return String(s || "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+    loadRecent();
+  </script>
+</body>
+</html>
