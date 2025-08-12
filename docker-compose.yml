@@ -3,7 +3,7 @@ version: "3.8"
 services:
   app:
     image: mybyelias/event-log:latest
-    container_name: eventLog-app
+    container_name: eventlog-app
     ports:
       - "8050:5000"
     depends_on:
@@ -14,13 +14,13 @@ services:
 
   mongo:
     image: mongo:latest
-    container_name: eventLog-mongodb
+    container_name: eventlog-mongodb
     ports:
       - "27020:27017"
     volumes:
-      - mongo_data_eventLog:/data/db
+      - mongo_data_eventlog:/data/db
     command: mongod --bind_ip_all
     restart: always
 
 volumes:
-  mongo_data_eventLog:
+  mongo_data_eventlog:
