@@ -30,13 +30,9 @@
 
   <div id="logs"></div>
 
-  <!-- تحميل مكتبة socket.io من المسار المظبوط -->
-  <script src="/event/socket.io/socket.io.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
   <script>
-    // الاتصال بالـ socket.io بالمسار المخصص
-    const socket = io({
-      path: '/event/socket.io/'
-    });
+    const socket = io();
 
     const logsEl = document.getElementById("logs");
     const eventTypeFilter = document.getElementById("eventTypeFilter");
@@ -72,7 +68,7 @@
     // load recent logs on open
     async function loadRecent() {
       try {
-        const res = await fetch("/event/api/logs?limit=50"); // تعديل المسار هنا
+        const res = await fetch("/api/logs?limit=50");
         const json = await res.json();
         if (json.ok) {
           json.logs.reverse().forEach(l => logsEl.appendChild(renderLog(l)));
