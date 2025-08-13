@@ -30,9 +30,10 @@
 
   <div id="logs"></div>
 
-  <script src="/socket.io/socket.io.js"></script>
+  <script src="/event/socket.io/socket.io.js"></script>
+
   <script>
-    const socket = io();
+    const socket = io("/event");
 
     const logsEl = document.getElementById("logs");
     const eventTypeFilter = document.getElementById("eventTypeFilter");
