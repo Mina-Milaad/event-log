@@ -17,7 +17,7 @@ const server = http.createServer(app);
 //const io = new Server(server, { cors: { origin: "*" } });
 const io = new Server(server, {
   cors: { origin: "*" },
-  path: "/event/socket.io/"
+  path: "/socket.io/"
 });
 
 
