@@ -2,8 +2,8 @@ import express from 'express'
 import cors from 'cors'
 import { dbConn } from './database/dbConnection.js';
 import { bootstrap } from './src/modules/bootstrap.js'
-import { Server } from "socket.io";
 import http from "http";
+import { Server } from "socket.io";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -14,12 +14,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 const server = http.createServer(app);
-//const io = new Server(server, { cors: { origin: "*" } });
-const io = new Server(server, {
-  cors: { origin: "*" },
-  path: "/socket.io/"
-});
-
+const io = new Server(server, { cors: { origin: "*" } });
 
 const port = 5000;
 app.use(cors())
@@ -30,16 +25,14 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/event', express.static(path.join(__dirname, "public")));
-
 bootstrap(app)
 
 
-app.get('/event', (req, res) => {
+app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
-//app.use( express.static(path.join(__dirname, "public")));
+app.use( express.static(path.join(__dirname, "public")));
 
 io.on("connection", (socket) => {
   console.log("New client connected:", socket.id);
@@ -48,3 +41,6 @@ io.on("connection", (socket) => {
 
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+
+
+
