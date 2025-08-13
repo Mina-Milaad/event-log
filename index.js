@@ -28,11 +28,11 @@ app.use((req, res, next) => {
 bootstrap(app)
 
 
-// app.get('/event', (req, res) => {
-//   res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
-// });
+app.get('/event', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
+});
 
-app.use(express.static(path.join(__dirname, "public")));
+app.use('/event', express.static(path.join(__dirname, "public")));
 
 io.on("connection", (socket) => {
   console.log("New client connected:", socket.id);
