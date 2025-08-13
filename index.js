@@ -27,7 +27,12 @@ app.use((req, res, next) => {
 
 bootstrap(app)
 
-app.use(express.static(path.join(__dirname, "public")));
+//app.use(express.static(path.join(__dirname, "public")));
+
+app.use('/event', express.static(path.join(__dirname, 'public'), {
+  dashboard: 'dashboard.html'
+}));
+
 
 io.on("connection", (socket) => {
   console.log("New client connected:", socket.id);
