@@ -32,7 +32,7 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    const socket = io("/event");
+    const socket = io();
 
     const logsEl = document.getElementById("logs");
     const eventTypeFilter = document.getElementById("eventTypeFilter");
@@ -68,7 +68,7 @@
     // load recent logs on open
     async function loadRecent() {
       try {
-        const res = await fetch("/event/api/logs?limit=50");
+        const res = await fetch("/api/logs?limit=50");
         const json = await res.json();
         if (json.ok) {
           json.logs.reverse().forEach(l => logsEl.appendChild(renderLog(l)));
