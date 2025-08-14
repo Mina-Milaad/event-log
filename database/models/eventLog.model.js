@@ -7,6 +7,7 @@ const schema = new mongoose.Schema({
   eventType: String,
   userId: mongoose.Schema.Types.Mixed, // ممكن يكون ObjectId أو رقم من الـ .NET
   username: String,
+  role: { type: String, default: "user" },
   description: String,
   ipAddress: String,
   userAgent: String,
