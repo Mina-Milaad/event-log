@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Realtime Event Logs Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -14,92 +14,91 @@
 
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: #0a0a0f;
       min-height: 100vh;
-      color: #1a202c;
+      color: #e2e8f0;
+      line-height: 1.5;
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 1400px;
       margin: 0 auto;
-      padding: 2rem;
+      padding: 1rem;
     }
 
     .header {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      border-radius: 16px;
-      padding: 2rem;
-      margin-bottom: 2rem;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
 
     .header h1 {
-      font-size: 2.5rem;
+      font-size: 2rem;
       font-weight: 700;
-      color: #2d3748;
-      margin-bottom: 0.5rem;
-      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #f1f5f9;
+      margin-bottom: 0.25rem;
+      background: linear-gradient(135deg, #06b6d4, #3b82f6, #8b5cf6);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
 
     .header p {
-      color: #718096;
-      font-size: 1.1rem;
+      color: #94a3b8;
+      font-size: 0.95rem;
     }
 
     .controls {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
+      background: #1e293b;
+      border: 1px solid #334155;
       border-radius: 12px;
-      padding: 1.5rem;
-      margin-bottom: 2rem;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 1rem;
+      margin-bottom: 1rem;
       display: flex;
       gap: 1rem;
       align-items: center;
       flex-wrap: wrap;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     }
 
     .filter-group {
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 0.25rem;
     }
 
     .filter-group label {
       font-weight: 500;
-      color: #4a5568;
-      font-size: 0.875rem;
+      color: #cbd5e1;
+      font-size: 0.8rem;
     }
 
     select {
-      padding: 0.75rem 1rem;
-      border: 2px solid #e2e8f0;
-      border-radius: 8px;
-      background: white;
-      font-size: 0.875rem;
-      color: #2d3748;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid #475569;
+      border-radius: 6px;
+      background: #0f172a;
+      font-size: 0.85rem;
+      color: #e2e8f0;
       transition: all 0.2s ease;
-      min-width: 150px;
+      min-width: 140px;
     }
 
     select:focus {
       outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      border-color: #06b6d4;
+      box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.2);
     }
 
     .btn {
-      padding: 0.75rem 1.5rem;
+      padding: 0.5rem 1rem;
       border: none;
-      border-radius: 8px;
+      border-radius: 6px;
       font-weight: 500;
-      font-size: 0.875rem;
+      font-size: 0.85rem;
       cursor: pointer;
       transition: all 0.2s ease;
       display: inline-flex;
@@ -108,78 +107,113 @@
     }
 
     .btn-clear {
-      background: #f56565;
+      background: linear-gradient(135deg, #dc2626, #b91c1c);
       color: white;
+      border: 1px solid #dc2626;
     }
 
     .btn-clear:hover {
-      background: #e53e3e;
+      background: linear-gradient(135deg, #b91c1c, #991b1b);
       transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(245, 101, 101, 0.3);
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
     }
 
     .stats {
       display: flex;
-      gap: 1rem;
+      gap: 1.5rem;
       margin-left: auto;
-      font-size: 0.875rem;
-      color: #718096;
+      font-size: 0.85rem;
+      color: #94a3b8;
     }
 
     .stat {
       display: flex;
       align-items: center;
-      gap: 0.25rem;
+      gap: 0.5rem;
+      padding: 0.25rem 0.75rem;
+      background: #0f172a;
+      border-radius: 20px;
+      border: 1px solid #334155;
     }
 
     .status-indicator {
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: #48bb78;
+      background: #10b981;
       animation: pulse 2s infinite;
     }
 
     @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(1.1); }
     }
 
     .logs-container {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
+      background: #1e293b;
+      border: 1px solid #334155;
       border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
       overflow: hidden;
     }
 
     .logs-header {
-      padding: 1.5rem;
-      border-bottom: 1px solid #e2e8f0;
-      background: #f7fafc;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #334155;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
     }
 
     .logs-header h3 {
-      font-size: 1.25rem;
+      font-size: 1.1rem;
       font-weight: 600;
-      color: #2d3748;
+      color: #f1f5f9;
     }
 
     #logs {
-      max-height: 600px;
+      max-height: 70vh;
       overflow-y: auto;
     }
 
+    /* Custom scrollbar */
+    #logs::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #logs::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+
+    #logs::-webkit-scrollbar-thumb {
+      background: #475569;
+      border-radius: 3px;
+    }
+
+    #logs::-webkit-scrollbar-thumb:hover {
+      background: #64748b;
+    }
+
     .log {
-      border-bottom: 1px solid #f1f5f9;
-      padding: 1.5rem;
+      border-bottom: 1px solid #334155;
+      padding: 1rem 1.5rem;
       transition: all 0.2s ease;
       position: relative;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
     }
 
     .log:hover {
-      background: #f8fafc;
+      background: rgba(15, 23, 42, 0.5);
+      border-left: 3px solid #06b6d4;
     }
 
     .log:last-child {
@@ -189,105 +223,147 @@
     .log-header {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 0.75rem;
       margin-bottom: 0.75rem;
       flex-wrap: wrap;
     }
 
     .event-type {
-      padding: 0.25rem 0.75rem;
-      border-radius: 20px;
-      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.7rem;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.05em;
+      border: 1px solid;
     }
 
-    .event-type.login { background: #c6f6d5; color: #22543d; }
-    .event-type.logout { background: #fed7d7; color: #742a2a; }
-    .event-type.register { background: #bee3f8; color: #2a4365; }
-    .event-type.create { background: #d9f7be; color: #237804; }
-    .event-type.update { background: #fff2e6; color: #d46b08; }
-    .event-type.delete { background: #ffccc7; color: #a8071a; }
-    .event-type.read { background: #f0f5ff; color: #1d39c4; }
+    .event-type.login { 
+      background: rgba(16, 185, 129, 0.1); 
+      color: #10b981; 
+      border-color: #10b981;
+    }
+    .event-type.logout { 
+      background: rgba(239, 68, 68, 0.1); 
+      color: #ef4444; 
+      border-color: #ef4444;
+    }
+    .event-type.register { 
+      background: rgba(59, 130, 246, 0.1); 
+      color: #3b82f6; 
+      border-color: #3b82f6;
+    }
+    .event-type.create { 
+      background: rgba(34, 197, 94, 0.1); 
+      color: #22c55e; 
+      border-color: #22c55e;
+    }
+    .event-type.update { 
+      background: rgba(245, 158, 11, 0.1); 
+      color: #f59e0b; 
+      border-color: #f59e0b;
+    }
+    .event-type.delete { 
+      background: rgba(220, 38, 38, 0.1); 
+      color: #dc2626; 
+      border-color: #dc2626;
+    }
+    .event-type.read { 
+      background: rgba(139, 92, 246, 0.1); 
+      color: #8b5cf6; 
+      border-color: #8b5cf6;
+    }
 
     .method-endpoint {
-      font-family: 'Monaco', 'Menlo', monospace;
-      background: #f1f5f9;
-      padding: 0.25rem 0.5rem;
+      font-family: 'JetBrains Mono', 'Monaco', monospace;
+      background: #0f172a;
+      padding: 0.2rem 0.5rem;
       border-radius: 4px;
       font-size: 0.75rem;
-      color: #4a5568;
+      color: #06b6d4;
+      border: 1px solid #334155;
     }
 
     .timestamp {
-      color: #718096;
-      font-size: 0.875rem;
+      color: #64748b;
+      font-size: 0.8rem;
       margin-left: auto;
+      font-family: 'JetBrains Mono', monospace;
     }
 
     .log-details {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
     }
 
     .detail-item {
       display: flex;
       flex-direction: column;
-      gap: 0.25rem;
+      gap: 0.15rem;
     }
 
     .detail-label {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       font-weight: 500;
-      color: #718096;
+      color: #64748b;
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
 
     .detail-value {
-      font-size: 0.875rem;
-      color: #2d3748;
+      font-size: 0.85rem;
+      color: #cbd5e1;
       word-break: break-all;
+      font-family: 'JetBrains Mono', monospace;
     }
 
     .description {
-      background: #f8fafc;
-      border-left: 4px solid #667eea;
-      padding: 1rem;
-      border-radius: 0 8px 8px 0;
-      font-size: 0.875rem;
-      color: #4a5568;
-      line-height: 1.5;
+      background: rgba(15, 23, 42, 0.5);
+      border-left: 3px solid #06b6d4;
+      padding: 0.75rem;
+      border-radius: 0 6px 6px 0;
+      font-size: 0.85rem;
+      color: #94a3b8;
+      line-height: 1.4;
     }
 
     .empty-state {
       text-align: center;
-      padding: 4rem 2rem;
-      color: #718096;
+      padding: 3rem 2rem;
+      color: #64748b;
     }
 
     .empty-state svg {
-      width: 64px;
-      height: 64px;
+      width: 48px;
+      height: 48px;
       margin: 0 auto 1rem;
-      opacity: 0.5;
+      opacity: 0.6;
+      color: #475569;
+    }
+
+    .empty-state p {
+      font-size: 0.9rem;
     }
 
     @media (max-width: 768px) {
       .container {
+        padding: 0.75rem;
+      }
+
+      .header {
         padding: 1rem;
       }
 
       .header h1 {
-        font-size: 2rem;
+        font-size: 1.5rem;
       }
 
       .controls {
         flex-direction: column;
         align-items: stretch;
+        padding: 0.75rem;
       }
 
       .stats {
@@ -295,9 +371,14 @@
         justify-content: center;
       }
 
+      .log {
+        padding: 0.75rem 1rem;
+      }
+
       .log-header {
         flex-direction: column;
         align-items: flex-start;
+        gap: 0.5rem;
       }
 
       .timestamp {
@@ -306,6 +387,11 @@
 
       .log-details {
         grid-template-columns: 1fr;
+        gap: 0.5rem;
+      }
+
+      #logs {
+        max-height: 60vh;
       }
     }
   </style>
@@ -409,7 +495,7 @@
           </div>
           <div class="detail-item">
             <span class="detail-label">User Agent</span>
-            <span class="detail-value">${truncateText(log.userAgent || "N/A", 50)}</span>
+            <span class="detail-value">${truncateText(log.userAgent || "N/A", 40)}</span>
           </div>
         </div>
         ${log.description ? `<div class="description">${escapeHtml(log.description)}</div>` : ''}
@@ -479,7 +565,7 @@
     // Event listeners
     eventTypeFilter.addEventListener("change", applyFilter);
     clearBtn.addEventListener("click", () => {
-      logsEl.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg><p>No events yet. Waiting for realtime data...</p></div>';
+      logsEl.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 9 4.03 9 9z"/></svg><p>No events yet. Waiting for realtime data...</p></div>';
       updateLogCount();
     });
 
