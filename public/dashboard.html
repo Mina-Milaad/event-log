@@ -131,35 +131,6 @@
       height: 16px;
     }
 
-    .filter-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-      min-width: 160px;
-    }
-
-    .filter-group label {
-      font-size: 0.75rem;
-      color: #94a3b8;
-      font-weight: 500;
-    }
-
-    select {
-      padding: 0.75rem;
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 8px;
-      color: #e2e8f0;
-      font-size: 0.9rem;
-      transition: all 0.2s ease;
-    }
-
-    select:focus {
-      outline: none;
-      border-color: #8b5cf6;
-      box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
-    }
-
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -383,49 +354,27 @@
           type="text" 
           class="search-input" 
           id="searchInput"
-          placeholder="Search logs, usernames, user_actions..."
+          placeholder="Search logs, usernames, events..."
         />
-      </div>
-      
-      <div class="filter-group">
-        <label for="roleFilter">Filter by Role</label>
-        <select id="roleFilter">
-          <option value="">All Roles</option>
-          <option value="admin">Admin</option>
-          <option value="moderator">Moderator</option>
-          <option value="user">User</option>
-        </select>
-      </div>
-
-      <div class="filter-group">
-        <label for="actionFilter">Filter by Action</label>
-        <select id="actionFilter">
-          <option value="">All Actions</option>
-          <option value="login">Login</option>
-          <option value="logout">Logout</option>
-          <option value="create">Create</option>
-          <option value="update">Update</option>
-          <option value="delete">Delete</option>
-        </select>
       </div>
     </div>
 
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-number" id="userActionsCount">5</div>
-        <div class="stat-label">User Actions</div>
+        <div class="stat-label">Clock In Actions</div>
       </div>
       <div class="stat-card">
         <div class="stat-number" id="loginActionsCount">6</div>
-        <div class="stat-label">Login Actions</div>
+        <div class="stat-label">Login To AD Actions</div>
       </div>
       <div class="stat-card">
         <div class="stat-number" id="moderatorActionsCount">6</div>
-        <div class="stat-label">Moderator Actions</div>
+        <div class="stat-label">Admin Actions</div>
       </div>
       <div class="stat-card">
         <div class="stat-number" id="systemActionsCount">6</div>
-        <div class="stat-label">System Actions</div>
+        <div class="stat-label">Total Actions</div>
       </div>
     </div>
 
@@ -458,8 +407,6 @@
 
     const activityListEl = document.getElementById("activityList");
     const searchInput = document.getElementById("searchInput");
-    const roleFilter = document.getElementById("roleFilter");
-    const actionFilter = document.getElementById("actionFilter");
     const entriesCountEl = document.getElementById("entriesCount");
 
     // Avatar colors for different users
@@ -478,36 +425,34 @@
       return avatarColors[Math.abs(hash) % avatarColors.length];
     }
 
-    function getUserRole(eventType) {
-      if (['delete', 'update'].includes(eventType)) return 'moderator';
-      if (eventType === 'create') return 'admin';
-      return 'user';
+    function getUserRole(log) {
+      return log.role || 'User';
     }
 
     function getActionDescription(log) {
       const actions = {
-        'login': 'signed in to the system',
-        'logout': 'signed out of the system',
-        'register': 'created a new account',
-        'create': 'created new content',
-        'update': 'updated existing content',
-        'delete': 'removed content',
-        'read': 'accessed content'
+        'Clock in': 'clocked into the system',
+        'Login To AD': 'logged into Active Directory',
+        'Clock out': 'clocked out of the system',
+        'Logout': 'logged out of the system',
+        'Create': 'created new content',
+        'Update': 'updated existing content',
+        'Delete': 'removed content'
       };
-      return actions[log.eventType] || log.description || 'performed an action';
+      return actions[log.eventType] || `performed ${log.eventType}`;
     }
 
     function renderActivity(log) {
       const div = document.createElement("div");
       div.className = "activity-item";
       div.dataset.eventType = log.eventType;
-      div.dataset.role = getUserRole(log.eventType);
+      div.dataset.role = getUserRole(log).toLowerCase();
       div.dataset.username = (log.username || "Anonymous").toLowerCase();
 
       const username = log.username || "Anonymous";
       const initials = username.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
       const avatarColor = getAvatarColor(username);
-      const role = getUserRole(log.eventType);
+      const role = getUserRole(log);
       const description = getActionDescription(log);
       const timestamp = new Date(log.createdAt).toLocaleString();
       
@@ -542,46 +487,41 @@
     function updateStats() {
       const activities = activityListEl.querySelectorAll('.activity-item');
       const stats = {
-        user: 0,
-        login: 0,
-        moderator: 0,
-        system: 0
+        clockIn: 0,
+        loginAD: 0,
+        admin: 0,
+        total: 0
       };
 
       activities.forEach(activity => {
         const role = activity.dataset.role;
         const eventType = activity.dataset.eventType;
         
-        if (role === 'user') stats.user++;
-        if (eventType === 'login') stats.login++;
-        if (role === 'moderator') stats.moderator++;
-        if (['create', 'update', 'delete'].includes(eventType)) stats.system++;
+        if (eventType === 'Clock in') stats.clockIn++;
+        if (eventType === 'Login To AD') stats.loginAD++;
+        if (role === 'admin') stats.admin++;
+        stats.total++;
       });
 
-      document.getElementById('userActionsCount').textContent = stats.user;
-      document.getElementById('loginActionsCount').textContent = stats.login;
-      document.getElementById('moderatorActionsCount').textContent = stats.moderator;
-      document.getElementById('systemActionsCount').textContent = stats.system;
+      document.getElementById('userActionsCount').textContent = stats.clockIn;
+      document.getElementById('loginActionsCount').textContent = stats.loginAD;
+      document.getElementById('moderatorActionsCount').textContent = stats.admin;
+      document.getElementById('systemActionsCount').textContent = stats.total;
     }
 
     function applyFilters() {
       const searchTerm = searchInput.value.toLowerCase();
-      const roleValue = roleFilter.value;
-      const actionValue = actionFilter.value;
       const activities = activityListEl.querySelectorAll(".activity-item");
       
       let visibleCount = 0;
       activities.forEach(activity => {
         const matchesSearch = !searchTerm || 
           activity.dataset.username.includes(searchTerm) ||
+          activity.dataset.eventType.toLowerCase().includes(searchTerm) ||
           activity.querySelector('.activity-description').textContent.toLowerCase().includes(searchTerm);
         
-        const matchesRole = !roleValue || activity.dataset.role === roleValue;
-        const matchesAction = !actionValue || activity.dataset.eventType === actionValue;
-        
-        const shouldShow = matchesSearch && matchesRole && matchesAction;
-        activity.style.display = shouldShow ? "" : "none";
-        if (shouldShow) visibleCount++;
+        activity.style.display = matchesSearch ? "" : "none";
+        if (matchesSearch) visibleCount++;
       });
       
       entriesCountEl.textContent = `${visibleCount} entries found`;
@@ -609,8 +549,6 @@
 
     // Event listeners
     searchInput.addEventListener("input", applyFilters);
-    roleFilter.addEventListener("change", applyFilters);
-    actionFilter.addEventListener("change", applyFilters);
 
     // Initialize
     loadRecent();
