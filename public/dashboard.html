@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Event Logs Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <title>System Logs Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -13,79 +13,70 @@
     }
 
     body {
-      font-family: 'Inter', sans-serif;
-      background: #0f172a;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0f1419;
       min-height: 100vh;
       color: #e2e8f0;
-      padding: 1rem;
+      line-height: 1.5;
     }
 
-    .dashboard {
-      max-width: 1000px;
+    .container {
+      max-width: 1200px;
       margin: 0 auto;
-      background: #1e293b;
-      border-radius: 8px;
-      border: 1px solid #334155;
-      overflow: hidden;
+      padding: 1.5rem;
     }
 
     .header {
-      padding: 1rem 1.5rem;
-      border-bottom: 1px solid #334155;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 1rem;
+      margin-bottom: 2rem;
     }
 
-    .title {
-      font-size: 1.25rem;
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo {
+      width: 32px;
+      height: 32px;
+      background: #10b981;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: white;
+    }
+
+    .header h1 {
+      font-size: 1.5rem;
       font-weight: 600;
       color: #f1f5f9;
     }
 
-    .controls {
-      display: flex;
-      gap: 1rem;
-      align-items: center;
+    .header-subtitle {
+      color: #64748b;
+      font-size: 0.85rem;
+      margin-left: 0.5rem;
     }
 
-    select {
-      padding: 0.5rem;
-      background: #334155;
-      border: 1px solid #475569;
-      border-radius: 4px;
-      color: #e2e8f0;
-      font-size: 0.875rem;
-    }
-
-    .btn {
-      padding: 0.5rem 1rem;
-      background: #dc2626;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      font-size: 0.875rem;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .btn:hover {
-      background: #b91c1c;
-    }
-
-    .status {
+    .online-status {
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      font-size: 0.875rem;
-      color: #94a3b8;
+      background: #1e293b;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      border: 1px solid #334155;
     }
 
-    .live-dot {
-      width: 6px;
-      height: 6px;
+    .status-dot {
+      width: 8px;
+      height: 8px;
       background: #10b981;
       border-radius: 50%;
       animation: pulse 2s infinite;
@@ -93,119 +84,363 @@
 
     @keyframes pulse {
       0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
+      50% { opacity: 0.6; }
     }
 
-    .logs-container {
-      max-height: 500px;
-      overflow-y: auto;
-    }
-
-    .log-row {
-      display: grid;
-      grid-template-columns: 80px 1fr 120px 100px;
+    .controls {
+      display: flex;
       gap: 1rem;
-      padding: 0.75rem 1.5rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .search-container {
+      flex: 1;
+      min-width: 300px;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.5rem;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      color: #e2e8f0;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: #8b5cf6;
+      box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+    }
+
+    .search-input::placeholder {
+      color: #64748b;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #64748b;
+      width: 16px;
+      height: 16px;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      min-width: 160px;
+    }
+
+    .filter-group label {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+
+    select {
+      padding: 0.75rem;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      color: #e2e8f0;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: #8b5cf6;
+      box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 1.25rem;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .stat-card:hover {
+      border-color: #8b5cf6;
+      transform: translateY(-2px);
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #f59e0b;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+      color: #94a3b8;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .activity-section {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .activity-header {
+      padding: 1.25rem 1.5rem;
       border-bottom: 1px solid #334155;
-      font-size: 0.875rem;
+      display: flex;
+      justify-content: space-between;
       align-items: center;
     }
 
-    .log-row:hover {
-      background: #334155;
-    }
-
-    .log-row:last-child {
-      border-bottom: none;
-    }
-
-    .event-badge {
-      padding: 0.25rem 0.5rem;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      font-weight: 500;
-      text-align: center;
-      background: #475569;
-      color: #e2e8f0;
-    }
-
-    .event-badge.login { background: #059669; }
-    .event-badge.logout { background: #dc2626; }
-    .event-badge.register { background: #2563eb; }
-    .event-badge.create { background: #16a34a; }
-    .event-badge.update { background: #ea580c; }
-    .event-badge.delete { background: #dc2626; }
-
-    .user-info {
+    .activity-header h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
       color: #f1f5f9;
     }
 
-    .ip-address {
-      color: #94a3b8;
-      font-family: monospace;
+    .entries-count {
+      color: #64748b;
+      font-size: 0.85rem;
     }
 
-    .timestamp {
+    .activity-list {
+      max-height: 600px;
+      overflow-y: auto;
+    }
+
+    .activity-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .activity-list::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+
+    .activity-list::-webkit-scrollbar-thumb {
+      background: #475569;
+      border-radius: 3px;
+    }
+
+    .activity-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #334155;
+      transition: all 0.2s ease;
+    }
+
+    .activity-item:hover {
+      background: rgba(139, 92, 246, 0.05);
+    }
+
+    .activity-item:last-child {
+      border-bottom: none;
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .activity-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .username {
+      font-weight: 600;
+      color: #f1f5f9;
+      font-size: 0.9rem;
+    }
+
+    .user-role {
+      background: #8b5cf6;
+      color: white;
+      padding: 0.1rem 0.5rem;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+
+    .activity-description {
+      color: #94a3b8;
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+
+    .activity-time {
       color: #64748b;
-      font-size: 0.75rem;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      text-align: right;
     }
 
     .empty-state {
       text-align: center;
-      padding: 3rem;
+      padding: 3rem 2rem;
       color: #64748b;
     }
 
+    .empty-state svg {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 1rem;
+      opacity: 0.6;
+    }
+
     @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+
       .header {
         flex-direction: column;
-        align-items: stretch;
+        align-items: flex-start;
+        gap: 1rem;
       }
 
       .controls {
-        justify-content: space-between;
+        flex-direction: column;
       }
 
-      .log-row {
-        grid-template-columns: 1fr;
-        gap: 0.5rem;
-        padding: 1rem 1.5rem;
+      .search-container {
+        min-width: auto;
       }
 
-      .log-row > div {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .activity-item {
+        padding: 0.75rem 1rem;
+      }
+
+      .user-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
       }
     }
   </style>
 </head>
 <body>
-  <div class="dashboard">
+  <div class="container">
     <div class="header">
-      <h1 class="title">Event Logs Dashboard</h1>
-      <div class="controls">
-        <select id="eventTypeFilter">
-          <option value="">All Events</option>
+      <div class="header-left">
+        <div class="logo">SL</div>
+        <div>
+          <h1>System Logs</h1>
+          <span class="header-subtitle">Real-time monitoring dashboard</span>
+        </div>
+      </div>
+      <div class="online-status">
+        <div class="status-dot"></div>
+        <span id="onlineCount">24 online</span>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="search-container">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input 
+          type="text" 
+          class="search-input" 
+          id="searchInput"
+          placeholder="Search logs, usernames, user_actions..."
+        />
+      </div>
+      
+      <div class="filter-group">
+        <label for="roleFilter">Filter by Role</label>
+        <select id="roleFilter">
+          <option value="">All Roles</option>
+          <option value="admin">Admin</option>
+          <option value="moderator">Moderator</option>
+          <option value="user">User</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="actionFilter">Filter by Action</label>
+        <select id="actionFilter">
+          <option value="">All Actions</option>
           <option value="login">Login</option>
           <option value="logout">Logout</option>
-          <option value="register">Register</option>
           <option value="create">Create</option>
           <option value="update">Update</option>
           <option value="delete">Delete</option>
         </select>
-        <button id="clear" class="btn">Clear</button>
-        <div class="status">
-          <div class="live-dot"></div>
-          <span>Live</span>
-          <span id="logCount">0 events</span>
-        </div>
       </div>
     </div>
 
-    <div class="logs-container" id="logs">
-      <div class="empty-state">
-        <p>No events yet. Waiting for data...</p>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number" id="userActionsCount">5</div>
+        <div class="stat-label">User Actions</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="loginActionsCount">6</div>
+        <div class="stat-label">Login Actions</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="moderatorActionsCount">6</div>
+        <div class="stat-label">Moderator Actions</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="systemActionsCount">6</div>
+        <div class="stat-label">System Actions</div>
+      </div>
+    </div>
+
+    <div class="activity-section">
+      <div class="activity-header">
+        <h3>Activity Log</h3>
+        <span class="entries-count" id="entriesCount">25 entries found</span>
+      </div>
+      <div class="activity-list" id="activityList">
+        <div class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 9 4.03 9 9z"/>
+          </svg>
+          <p>No activities yet. Waiting for realtime data...</p>
+        </div>
       </div>
     </div>
   </div>
@@ -217,50 +452,139 @@
     });
 
     socket.on("eventLog", (log) => {
-      addLogToTop(log);
-      updateLogCount();
+      addActivityToTop(log);
+      updateStats();
     });
 
-    const logsEl = document.getElementById("logs");
-    const eventTypeFilter = document.getElementById("eventTypeFilter");
-    const clearBtn = document.getElementById("clear");
-    const logCountEl = document.getElementById("logCount");
+    const activityListEl = document.getElementById("activityList");
+    const searchInput = document.getElementById("searchInput");
+    const roleFilter = document.getElementById("roleFilter");
+    const actionFilter = document.getElementById("actionFilter");
+    const entriesCountEl = document.getElementById("entriesCount");
 
-    function renderLog(log) {
+    // Avatar colors for different users
+    const avatarColors = [
+      '#ef4444', '#f97316', '#f59e0b', '#eab308', 
+      '#84cc16', '#22c55e', '#10b981', '#14b8a6',
+      '#06b6d4', '#0ea5e9', '#3b82f6', '#6366f1',
+      '#8b5cf6', '#a855f7', '#d946ef', '#ec4899'
+    ];
+
+    function getAvatarColor(username) {
+      let hash = 0;
+      for (let i = 0; i < username.length; i++) {
+        hash = username.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      return avatarColors[Math.abs(hash) % avatarColors.length];
+    }
+
+    function getUserRole(eventType) {
+      if (['delete', 'update'].includes(eventType)) return 'moderator';
+      if (eventType === 'create') return 'admin';
+      return 'user';
+    }
+
+    function getActionDescription(log) {
+      const actions = {
+        'login': 'signed in to the system',
+        'logout': 'signed out of the system',
+        'register': 'created a new account',
+        'create': 'created new content',
+        'update': 'updated existing content',
+        'delete': 'removed content',
+        'read': 'accessed content'
+      };
+      return actions[log.eventType] || log.description || 'performed an action';
+    }
+
+    function renderActivity(log) {
       const div = document.createElement("div");
-      div.className = "log-row";
+      div.className = "activity-item";
       div.dataset.eventType = log.eventType;
+      div.dataset.role = getUserRole(log.eventType);
+      div.dataset.username = (log.username || "Anonymous").toLowerCase();
 
-      const timestamp = new Date(log.createdAt).toLocaleString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
+      const username = log.username || "Anonymous";
+      const initials = username.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+      const avatarColor = getAvatarColor(username);
+      const role = getUserRole(log.eventType);
+      const description = getActionDescription(log);
+      const timestamp = new Date(log.createdAt).toLocaleString();
       
       div.innerHTML = `
-        <div class="event-badge ${log.eventType}">${log.eventType.toUpperCase()}</div>
-        <div class="user-info">${log.username || 'Anonymous'}</div>
-        <div class="ip-address">${log.ipAddress || 'N/A'}</div>
-        <div class="timestamp">${timestamp}</div>
+        <div class="user-avatar" style="background: ${avatarColor}">
+          ${initials}
+        </div>
+        <div class="activity-content">
+          <div class="user-info">
+            <span class="username">${username}</span>
+            <span class="user-role">${role}</span>
+          </div>
+          <div class="activity-description">${description}</div>
+        </div>
+        <div class="activity-time">${timestamp}</div>
       `;
       return div;
     }
 
-    function addLogToTop(log) {
-      const emptyState = logsEl.querySelector('.empty-state');
+    function addActivityToTop(log) {
+      // Remove empty state if it exists
+      const emptyState = activityListEl.querySelector('.empty-state');
       if (emptyState) {
         emptyState.remove();
       }
 
-      const node = renderLog(log);
-      logsEl.insertBefore(node, logsEl.firstChild);
-      applyFilter();
+      const node = renderActivity(log);
+      activityListEl.insertBefore(node, activityListEl.firstChild);
+      applyFilters();
     }
 
-    function updateLogCount() {
-      const visibleLogs = logsEl.querySelectorAll('.log-row:not([style*="display: none"])').length;
-      logCountEl.textContent = `${visibleLogs} events`;
+    function updateStats() {
+      const activities = activityListEl.querySelectorAll('.activity-item');
+      const stats = {
+        user: 0,
+        login: 0,
+        moderator: 0,
+        system: 0
+      };
+
+      activities.forEach(activity => {
+        const role = activity.dataset.role;
+        const eventType = activity.dataset.eventType;
+        
+        if (role === 'user') stats.user++;
+        if (eventType === 'login') stats.login++;
+        if (role === 'moderator') stats.moderator++;
+        if (['create', 'update', 'delete'].includes(eventType)) stats.system++;
+      });
+
+      document.getElementById('userActionsCount').textContent = stats.user;
+      document.getElementById('loginActionsCount').textContent = stats.login;
+      document.getElementById('moderatorActionsCount').textContent = stats.moderator;
+      document.getElementById('systemActionsCount').textContent = stats.system;
+    }
+
+    function applyFilters() {
+      const searchTerm = searchInput.value.toLowerCase();
+      const roleValue = roleFilter.value;
+      const actionValue = actionFilter.value;
+      const activities = activityListEl.querySelectorAll(".activity-item");
+      
+      let visibleCount = 0;
+      activities.forEach(activity => {
+        const matchesSearch = !searchTerm || 
+          activity.dataset.username.includes(searchTerm) ||
+          activity.querySelector('.activity-description').textContent.toLowerCase().includes(searchTerm);
+        
+        const matchesRole = !roleValue || activity.dataset.role === roleValue;
+        const matchesAction = !actionValue || activity.dataset.eventType === actionValue;
+        
+        const shouldShow = matchesSearch && matchesRole && matchesAction;
+        activity.style.display = shouldShow ? "" : "none";
+        if (shouldShow) visibleCount++;
+      });
+      
+      entriesCountEl.textContent = `${visibleCount} entries found`;
     }
 
     async function loadRecent() {
@@ -268,37 +592,27 @@
         const res = await fetch("/event/api/logs?limit=50");
         const json = await res.json();
         if (json.ok && json.logs.length > 0) {
-          const emptyState = logsEl.querySelector('.empty-state');
+          // Remove empty state
+          const emptyState = activityListEl.querySelector('.empty-state');
           if (emptyState) {
             emptyState.remove();
           }
           
-          json.logs.reverse().forEach(l => logsEl.appendChild(renderLog(l)));
-          updateLogCount();
+          json.logs.reverse().forEach(l => activityListEl.appendChild(renderActivity(l)));
+          updateStats();
+          applyFilters();
         }
       } catch (err) {
         console.error("Failed to load recent logs:", err);
       }
     }
 
-    function applyFilter() {
-      const filterValue = eventTypeFilter.value;
-      const logs = logsEl.querySelectorAll(".log-row");
-      
-      logs.forEach(el => {
-        const shouldShow = !filterValue || el.dataset.eventType === filterValue;
-        el.style.display = shouldShow ? "" : "none";
-      });
-      
-      updateLogCount();
-    }
+    // Event listeners
+    searchInput.addEventListener("input", applyFilters);
+    roleFilter.addEventListener("change", applyFilters);
+    actionFilter.addEventListener("change", applyFilters);
 
-    eventTypeFilter.addEventListener("change", applyFilter);
-    clearBtn.addEventListener("click", () => {
-      logsEl.innerHTML = '<div class="empty-state"><p>No events yet. Waiting for data...</p></div>';
-      updateLogCount();
-    });
-
+    // Initialize
     loadRecent();
   </script>
 </body>
