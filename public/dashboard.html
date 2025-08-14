@@ -55,13 +55,12 @@ socket.on("eventLog", (log) => {
       const t = new Date(log.createdAt).toLocaleString();
       div.innerHTML = `
         <strong>${log.eventType}</strong> — ${log.method} ${log.endpoint} — ${t} —
-        User: ${log.username || log.userId || "anonymous"} —
+        User: ${(log.username || "anonymous")} (ID: ${log.userId || "N/A"}) —
         IP: ${log.ipAddress || "N/A"} —
        Agent: ${log.userAgent || "N/A"}
 
 </div>
         <div class="desc">${escapeHtml(log.description || "")}</div>
- 
       `;
       return div;
     }
