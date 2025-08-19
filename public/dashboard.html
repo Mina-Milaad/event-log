@@ -398,11 +398,10 @@
   <script>
 
     const token = localStorage.getItem("token");
-    const role = localStorage.getItem("role");
-
-    // لو مفيش توكن أو مش أدمن → رجّعه على صفحة اللوجين
-    if (!token || role !== "admin") {
-      window.location.href = "login.html";
+    const roles = JSON.parse(localStorage.getItem("roles") || "[]");
+    
+    if (!token || !roles.includes("Admin")) {
+       window.location.href = "login.html";
     }
 
 

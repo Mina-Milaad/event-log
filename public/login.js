@@ -7,9 +7,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
   try {
     const res = await fetch("https://dm.s-badge.com/api/Authentication/Login", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password })
     });
 
@@ -17,11 +15,11 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
     console.log("Login response:", data);
 
     if (res.ok && data.succeeded && data.data?.token) {
-      // خزّن التوكن والرول
+      // خزّن التوكن والرولات
       localStorage.setItem("token", data.data.token);
-      localStorage.setItem("role", data.data.roles[0]);
+      localStorage.setItem("roles", JSON.stringify(data.data.roles));
 
-      // لو أدمن → dashboard
+      // لو فيها Admin → dashboard
       if (data.data.roles.includes("Admin")) {
         window.location.href = "dashboard.html";
       } else {
