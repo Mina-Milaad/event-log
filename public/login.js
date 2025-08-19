@@ -15,7 +15,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
 
     const data = await res.json();
     console.log("Login response:", data);
-
+    console.log(res);
     if (res.ok && data.token) {
       // خزّن التوكن و الرول
       localStorage.setItem("token", data.token);
