@@ -396,6 +396,16 @@
 
   <script src="/event/socket.io/socket.io.js"></script>
   <script>
+
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+
+    // لو مفيش توكن أو مش أدمن → رجّعه على صفحة اللوجين
+    if (!token || role !== "admin") {
+      window.location.href = "login.html";
+    }
+
+
     const socket = io("/", {
       path: "/event/socket.io"
     });
