@@ -7,30 +7,31 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
   try {
     const res = await fetch("https://dm.s-badge.com/api/Authentication/Login", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({ email, password })
     });
 
     const data = await res.json();
+    console.log("Login response:", data);
 
-    if (!res.ok || !data.token) {
-      document.getElementById("error").innerText = data.message || "Login failed";
-      return;
-    }
+    if (res.ok && data.token) {
+      // خزّن التوكن و الرول
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("role", data.role);
 
-    // حفظ الـ token + الـ role
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("role", data.role);
-
-    // لو Admin → يروح للـ Dashboard
-    if (data.role === "admin") {
-      window.location.href = "dashboard.html";
+      // لو أدمن → dashboard
+      if (data.role === "admin") {
+        window.location.href = "dashboard.html";
+      } else {
+        alert("You are not authorized to view this page");
+      }
     } else {
-      document.getElementById("error").innerText = "Access denied. Admins only.";
+      alert(data.message || "Login failed");
     }
-
   } catch (err) {
-    console.error(err);
-    document.getElementById("error").innerText = "Something went wrong";
+    console.error("Error:", err);
+    alert("Something went wrong, please try again.");
   }
 });
