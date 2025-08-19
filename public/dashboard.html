@@ -538,7 +538,10 @@
             emptyState.remove();
           }
           
-          json.logs.reverse().forEach(l => activityListEl.appendChild(renderActivity(l)));
+          json.logs
+              .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // الأحدث الأول
+              .forEach(l => activityListEl.appendChild(renderActivity(l)));
+
           updateStats();
           applyFilters();
         }
