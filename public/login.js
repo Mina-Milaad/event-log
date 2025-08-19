@@ -15,14 +15,14 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
 
     const data = await res.json();
     console.log("Login response:", data);
-    console.log(res);
-    if (res.ok && data.token) {
-      // خزّن التوكن و الرول
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("role", data.role);
+
+    if (res.ok && data.succeeded && data.data?.token) {
+      // خزّن التوكن والرول
+      localStorage.setItem("token", data.data.token);
+      localStorage.setItem("role", data.data.roles[0]);
 
       // لو أدمن → dashboard
-      if (data.role === "admin") {
+      if (data.data.roles.includes("Admin")) {
         window.location.href = "dashboard.html";
       } else {
         alert("You are not authorized to view this page");
