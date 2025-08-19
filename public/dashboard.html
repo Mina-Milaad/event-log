@@ -64,23 +64,27 @@
       margin-left: 0.5rem;
     }
 
-    /* .online-status {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: #1e293b;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      border: 1px solid #334155;
-    } */
+    .header-right {
+  display: flex;
+  align-items: center;
+}
 
-    /* .status-dot {
-      width: 8px;
-      height: 8px;
-      background: #10b981;
-      border-radius: 50%;
-      animation: pulse 2s infinite;
-    } */
+.logout-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
+}
+
 
     @keyframes pulse {
       0%, 100% { opacity: 1; }
@@ -331,18 +335,18 @@
 <body>
   <div class="container">
     <div class="header">
-      <div class="header-left">
-        <div class="logo">SL</div>
-        <div>
-          <h1>System Logs</h1>
-          <span class="header-subtitle">Real-time monitoring dashboard</span>
-        </div>
-      </div>
-      <!-- <div class="online-status">
-        <div class="status-dot"></div>
-        <span id="onlineCount">24 online</span>
-      </div> -->
+  <div class="header-left">
+    <div class="logo">SL</div>
+    <div>
+      <h1>System Logs</h1>
+      <span class="header-subtitle">Real-time monitoring dashboard</span>
     </div>
+  </div>
+  <div class="header-right">
+    <button id="logoutBtn" class="logout-btn">Logout</button>
+  </div>
+</div>
+
 
     <div class="controls">
       <div class="search-container">
@@ -564,6 +568,13 @@
 
     // Initialize
     loadRecent();
+    
+    const logoutBtn = document.getElementById("logoutBtn");
+  logoutBtn.addEventListener("click", () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("roles");
+    window.location.href = "login.html";
+  });
   </script>
 </body>
 </html>
