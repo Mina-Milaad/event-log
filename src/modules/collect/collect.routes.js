@@ -9,4 +9,4 @@ collectRouter.route('/collect')
              .post(collect); 
 
 
-export default collectRouter ;
+export default collectRouter ; 
