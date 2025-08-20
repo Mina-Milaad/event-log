@@ -79,7 +79,7 @@
       font-weight: 600; font-size: 0.9rem; color: white; flex-shrink: 0;
     }
     .activity-content { flex: 1; min-width: 0; }
-    .user-info { display: flex; align-items: center; gap: 0.35rem; margin-bottom: 0.25rem; flex-wrap: nowrap; }
+    .user-info { margin-bottom: 0.25rem}
     .username { font-weight: 600; color: #f1f5f9; font-size: 0.9rem; }
     .user-role {
       background: #8b5cf6; color: white; padding: 0.15rem 0.35rem;
@@ -242,7 +242,7 @@
         <div class="user-avatar" style="background:${avatarColor}">${initials}</div>
         <div class="activity-content">
           <div class="user-info">
-            <span class="username">${displayName}</span>
+            <div class="username">${displayName}</div>
             ${!createdBy ? `<div class="user-role activity-role">${role}</div>` : ""}
           </div>
           ${extraHTML}
