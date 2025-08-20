@@ -211,19 +211,27 @@
       div.className = "activity-item";
       div.dataset.eventType = log.EventType || "";
       div.dataset.role = (log.Role || "user").toLowerCase();
-      // div.dataset.username = (log.Username || "Anonymous").toLowerCase();
 
-      const displayName = log.createdBy || log.Username || "Anonymous";
+      // لو في createdBy -> يبان مكان username والعكس
+      let username = log.Username || "Anonymous";
+      let createdBy = log.createdBy;
+
+      let displayName = username;
+      let swappedCreatedBy = createdBy;
+
+      if (createdBy) {
+        displayName = createdBy;
+        swappedCreatedBy = username;
+      }
+
       div.dataset.username = displayName.toLowerCase();
 
-      // const username = log.Username || "Anonymous";
-      const initials = username.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-      const avatarColor = getAvatarColor(username);
+      const initials = displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+      const avatarColor = getAvatarColor(displayName);
       const role = log.Role || "User";
       const description = getActionDescription(log);
       const timestamp = log.createdAt ? new Date(log.createdAt).toLocaleString() : "N/A";
 
-      // dynamic extra fields
       const extraFields = [
         {label:"Endpoint", value: log.endpoint},
         {label:"IP", value: log.IpAddress},
@@ -232,7 +240,7 @@
         {label:"Full Username", value: log.fullUsername},
         {label:"Email", value: log.Email},
         {label:"TargetDN", value: log.targetDN},
-        {label:"Created By", value: log.createdBy},
+        {label:"Created By", value: swappedCreatedBy},
         {label:"Browser", value: log.fromSecureBrowser ? "Secure Browser" : null},
         {label:"User Agent", value: log.userAgent}
       ].filter(f => f.value);
@@ -246,7 +254,7 @@
         <div class="user-avatar" style="background:${avatarColor}">${initials}</div>
         <div class="activity-content">
           <div class="user-info">
-            <span class="username">${username}</span>
+            <span class="username">${displayName}</span>
             <span class="user-role">${role}</span>
           </div>
           <div class="activity-description">${description}</div>
