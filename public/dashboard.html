@@ -1,71 +1,580 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>System Logs Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f6f8;
+    * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
     }
-    header {
-      background: #1e3a8a;
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0f1419;
+      min-height: 100vh;
+      color: #e2e8f0;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo {
+      width: 32px;
+      height: 32px;
+      background: #10b981;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.9rem;
       color: white;
-      padding: 1rem 2rem;
+    }
+
+    .header h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+
+    .header-subtitle {
+      color: #64748b;
+      font-size: 0.85rem;
+      margin-left: 0.5rem;
+    }
+
+    .header-right {
+  display: flex;
+  align-items: center;
+}
+
+.logout-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
+}
+
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .controls {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .search-container {
+      flex: 1;
+      min-width: 300px;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.5rem;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      color: #e2e8f0;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: #8b5cf6;
+      box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+    }
+
+    .search-input::placeholder {
+      color: #64748b;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #64748b;
+      width: 16px;
+      height: 16px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 1.25rem;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .stat-card:hover {
+      border-color: #8b5cf6;
+      transform: translateY(-2px);
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #f59e0b;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+      color: #94a3b8;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .activity-section {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .activity-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid #334155;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    .logout-btn {
-      background: #ef4444;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 0.5rem 1rem;
+
+    .activity-header h3 {
+      font-size: 1.1rem;
       font-weight: 600;
-      cursor: pointer;
+      color: #f1f5f9;
+    }
+
+    .entries-count {
+      color: #64748b;
+      font-size: 0.85rem;
+    }
+
+    .activity-list {
+      max-height: 600px;
+      overflow-y: auto;
+    }
+
+    .activity-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .activity-list::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+
+    .activity-list::-webkit-scrollbar-thumb {
+      background: #475569;
+      border-radius: 3px;
+    }
+
+    .activity-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #334155;
       transition: all 0.2s ease;
     }
-    .logout-btn:hover {
-      background: #dc2626;
-      transform: translateY(-2px);
+
+    .activity-item:hover {
+      background: rgba(139, 92, 246, 0.05);
     }
-    .container {
-      max-width: 1000px;
-      margin: 2rem auto;
-      padding: 0 1rem;
+
+    .activity-item:last-child {
+      border-bottom: none;
     }
-    .log-card {
-      background: #fff;
-      border: 1px solid #ddd;
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
       border-radius: 8px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: white;
+      flex-shrink: 0;
     }
-    .log-card p {
-      margin: 0.3rem 0;
+
+    .activity-content {
+      flex: 1;
+      min-width: 0;
     }
-    .log-card strong {
-      color: #1e3a8a;
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .username {
+      font-weight: 600;
+      color: #f1f5f9;
+      font-size: 0.9rem;
+    }
+
+    .user-role {
+      background: #8b5cf6;
+      color: white;
+      padding: 0.1rem 0.5rem;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+
+    .activity-description {
+      color: #94a3b8;
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+
+    .activity-time {
+      color: #64748b;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      text-align: right;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 2rem;
+      color: #64748b;
+    }
+
+    .empty-state svg {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 1rem;
+      opacity: 0.6;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+
+      .controls {
+        flex-direction: column;
+      }
+
+      .search-container {
+        min-width: auto;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .activity-item {
+        padding: 0.75rem 1rem;
+      }
+
+      .user-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+      }
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Dashboard</h1>
-    <button id="logoutBtn" class="logout-btn">Logout</button>
-  </header>
-
   <div class="container">
-    <h2>Event Logs</h2>
-    <div id="logsContainer">Loading logs...</div>
+    <div class="header">
+  <div class="header-left">
+    <div class="logo">SL</div>
+    <div>
+      <h1>System Logs</h1>
+      <span class="header-subtitle">Real-time monitoring dashboard</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <button id="logoutBtn" class="logout-btn">Logout</button>
+  </div>
+</div>
+
+
+    <div class="controls">
+      <div class="search-container">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input 
+          type="text" 
+          class="search-input" 
+          id="searchInput"
+          placeholder="Search logs, usernames, events..."
+        />
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number" id="userActionsCount">5</div>
+        <div class="stat-label">Clock In Actions</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="loginActionsCount">6</div>
+        <div class="stat-label">Login To AD Actions</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="moderatorActionsCount">6</div>
+        <div class="stat-label">Admin Actions</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="systemActionsCount">6</div>
+        <div class="stat-label">Total Actions</div>
+      </div>
+    </div>
+
+    <div class="activity-section">
+      <div class="activity-header">
+        <h3>Activity Log</h3>
+        <span class="entries-count" id="entriesCount">25 entries found</span>
+      </div>
+      <div class="activity-list" id="activityList">
+        <div class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 9 4.03 9 9z"/>
+          </svg>
+          <p>No activities yet. Waiting for realtime data...</p>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <script src="dashboard.js"></script>
+  <script src="/event/socket.io/socket.io.js"></script>
+  <script>
+
+    const token = localStorage.getItem("token");
+    const roles = JSON.parse(localStorage.getItem("roles") || "[]");
+    
+    if (!token || !roles.includes("Admin")) {
+       window.location.href = "login.html";
+    }
+
+
+    const socket = io("/", {
+      path: "/event/socket.io"
+    });
+
+    socket.on("eventLog", (log) => {
+      addActivityToTop(log);
+      updateStats();
+    });
+
+    const activityListEl = document.getElementById("activityList");
+    const searchInput = document.getElementById("searchInput");
+    const entriesCountEl = document.getElementById("entriesCount");
+
+    // Avatar colors for different users
+    const avatarColors = [
+      '#ef4444', '#f97316', '#f59e0b', '#eab308', 
+      '#84cc16', '#22c55e', '#10b981', '#14b8a6',
+      '#06b6d4', '#0ea5e9', '#3b82f6', '#6366f1',
+      '#8b5cf6', '#a855f7', '#d946ef', '#ec4899'
+    ];
+
+    function getAvatarColor(username) {
+      let hash = 0;
+      for (let i = 0; i < username.length; i++) {
+        hash = username.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      return avatarColors[Math.abs(hash) % avatarColors.length];
+    }
+
+    function getUserRole(log) {
+      return log.role || 'User';
+    }
+
+    function getActionDescription(log) {
+      const actions = {
+        'Clock in': 'clocked into the system',
+        'Login To AD': 'logged into Active Directory',
+        'Clock out': 'clocked out of the system',
+        'Logout': 'logged out of the system',
+        'Create': 'created new content',
+        'Update': 'updated existing content',
+        'Delete': 'removed content'
+      };
+      return actions[log.eventType] || `performed ${log.eventType}`;
+    }
+
+    function renderActivity(log) {
+      const div = document.createElement("div");
+      div.className = "activity-item";
+      div.dataset.eventType = log.eventType;
+      div.dataset.role = getUserRole(log).toLowerCase();
+      div.dataset.username = (log.username || "Anonymous").toLowerCase();
+
+      const username = log.username || "Anonymous";
+      const initials = username.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+      const avatarColor = getAvatarColor(username);
+      const role = getUserRole(log);
+      const description = getActionDescription(log);
+      const timestamp = new Date(log.createdAt).toLocaleString();
+      
+      div.innerHTML = `
+        <div class="user-avatar" style="background: ${avatarColor}">
+          ${initials}
+        </div>
+        <div class="activity-content">
+          <div class="user-info">
+            <span class="username">${username}</span>
+            <span class="user-role">${role}</span>
+          </div>
+          <div class="activity-description">${description}</div>
+        </div>
+        <div class="activity-time">${timestamp}</div>
+      `;
+      return div;
+    }
+
+    function addActivityToTop(log) {
+      // Remove empty state if it exists
+      const emptyState = activityListEl.querySelector('.empty-state');
+      if (emptyState) {
+        emptyState.remove();
+      }
+
+      const node = renderActivity(log);
+      activityListEl.insertBefore(node, activityListEl.firstChild);
+      applyFilters();
+    }
+
+    function updateStats() {
+      const activities = activityListEl.querySelectorAll('.activity-item');
+      const stats = {
+        clockIn: 0,
+        loginAD: 0,
+        admin: 0,
+        total: 0
+      };
+
+      activities.forEach(activity => {
+        const role = activity.dataset.role;
+        const eventType = activity.dataset.eventType;
+        
+        if (eventType === 'Clock in') stats.clockIn++;
+        if (eventType === 'Login To AD') stats.loginAD++;
+        if (role === 'admin') stats.admin++;
+        stats.total++;
+      });
+
+      document.getElementById('userActionsCount').textContent = stats.clockIn;
+      document.getElementById('loginActionsCount').textContent = stats.loginAD;
+      document.getElementById('moderatorActionsCount').textContent = stats.admin;
+      document.getElementById('systemActionsCount').textContent = stats.total;
+    }
+
+    function applyFilters() {
+      const searchTerm = searchInput.value.toLowerCase();
+      const activities = activityListEl.querySelectorAll(".activity-item");
+      
+      let visibleCount = 0;
+      activities.forEach(activity => {
+        const matchesSearch = !searchTerm || 
+          activity.dataset.username.includes(searchTerm) ||
+          activity.dataset.eventType.toLowerCase().includes(searchTerm) ||
+          activity.querySelector('.activity-description').textContent.toLowerCase().includes(searchTerm);
+        
+        activity.style.display = matchesSearch ? "" : "none";
+        if (matchesSearch) visibleCount++;
+      });
+      
+      entriesCountEl.textContent = `${visibleCount} entries found`;
+    }
+
+    async function loadRecent() {
+      try {
+        const res = await fetch("/event/api/logs?limit=50");
+        const json = await res.json();
+        if (json.ok && json.logs.length > 0) {
+          // Remove empty state
+          const emptyState = activityListEl.querySelector('.empty-state');
+          if (emptyState) {
+            emptyState.remove();
+          }
+          
+          json.logs
+              .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // الأحدث الأول
+              .forEach(l => activityListEl.appendChild(renderActivity(l)));
+
+          updateStats();
+          applyFilters();
+        }
+      } catch (err) {
+        console.error("Failed to load recent logs:", err);
+      }
+    }
+
+    // Event listeners
+    searchInput.addEventListener("input", applyFilters);
+
+    // Initialize
+    loadRecent();
+    
+    const logoutBtn = document.getElementById("logoutBtn");
+  logoutBtn.addEventListener("click", () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("roles");
+    window.location.href = "login.html";
+  });
+  </script>
 </body>
 </html>
