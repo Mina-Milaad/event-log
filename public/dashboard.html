@@ -199,17 +199,21 @@
       div.dataset.eventType = log.EventType || "";
       div.dataset.role = (log.Role || "user").toLowerCase();
 
-      const username = log.Username || "Anonymous";
+      const originalUsername = log.Username || "Anonymous";
+      const createdBy = log.createdBy || null;
       const eventType = log.EventType || "";
+      const displayName = createdBy ? `${createdBy} ${eventType}` : `${originalUsername} ${eventType}`;
+      div.dataset.username = (createdBy || originalUsername).toLowerCase();
+
+      const initials = (createdBy || originalUsername).split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+      const avatarColor = getAvatarColor(createdBy || originalUsername);
+
       const role = log.Role || "User";
       const timestamp = log.createdAt ? new Date(log.createdAt).toLocaleString() : "N/A";
 
-      const initials = username.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-      const avatarColor = getAvatarColor(username);
-
       const extraFields = [
         {label:"Email", value: log.Email},
-        {label:"User", value: `${username}  Role : ${role}`}
+        {label:"User", value: createdBy ? `${originalUsername}  Role : ${role}` : role}
       ].filter(f => f.value);
 
       let extraHTML = "";
@@ -221,8 +225,8 @@
         <div class="user-avatar" style="background:${avatarColor}">${initials}</div>
         <div class="activity-content">
           <div class="user-info">
-            <span class="username">${username} ${eventType}</span>
-            <span class="user-role">${role}</span>
+            <span class="username">${displayName}</span>
+            ${!createdBy ? `<span class="user-role">${role}</span>` : ""}
           </div>
           ${extraHTML}
         </div>
@@ -262,7 +266,7 @@
       let visibleCount = 0;
       activities.forEach(activity => {
         const matchesSearch = !searchTerm ||
-          activity.dataset.username?.includes(searchTerm) ||
+          activity.dataset.username.includes(searchTerm) ||
           activity.dataset.eventType.toLowerCase().includes(searchTerm) ||
           activity.querySelector('.activity-content').textContent.toLowerCase().includes(searchTerm);
         activity.style.display = matchesSearch ? "" : "none";
