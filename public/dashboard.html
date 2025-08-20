@@ -193,19 +193,6 @@
       return avatarColors[Math.abs(hash) % avatarColors.length];
     }
 
-    function getActionDescription(log) {
-      const actions = {
-        'Clock in': 'clocked into the system',
-        'Login To AD': 'logged into Active Directory',
-        'Clock out': 'clocked out of the system',
-        'Logout': 'logged out of the system',
-        'Create': 'created new content',
-        'Update': 'updated existing content',
-        'Delete': 'removed content'
-      };
-      return actions[log.EventType] || log.description || `performed ${log.EventType || "an action"}`;
-    }
-
     function renderActivity(log) {
       const div = document.createElement("div");
       div.className = "activity-item";
@@ -214,27 +201,19 @@
 
       const originalUsername = log.Username || "Anonymous";
       const createdBy = log.createdBy || null;
-      const displayName = createdBy ? createdBy : originalUsername;
-      div.dataset.username = displayName.toLowerCase();
+      const eventType = log.EventType || "";
+      const displayName = createdBy ? `${createdBy} ${eventType}` : `${originalUsername} ${eventType}`;
+      div.dataset.username = (createdBy || originalUsername).toLowerCase();
 
-      const initials = displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-      const avatarColor = getAvatarColor(displayName);
+      const initials = (createdBy || originalUsername).split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+      const avatarColor = getAvatarColor(createdBy || originalUsername);
 
       const role = log.Role || "User";
-      const description = getActionDescription(log);
       const timestamp = log.createdAt ? new Date(log.createdAt).toLocaleString() : "N/A";
 
       const extraFields = [
-        {label:"Endpoint", value: log.endpoint},
-        {label:"IP", value: log.IpAddress},
-        {label:"Local IP", value: log.localIPAddress},
-        {label:"Computer", value: log.computerName},
-        {label:"Full Username", value: log.fullUsername},
         {label:"Email", value: log.Email},
-        {label:"TargetDN", value: log.targetDN},
-        ...(createdBy ? [{ label: "User", value: `${originalUsername}  Role : ${role}` }] : []),
-        {label:"Browser", value: log.fromSecureBrowser ? "Secure Browser" : null},
-        {label:"User Agent", value: log.userAgent}
+        {label:"User", value: createdBy ? `${originalUsername}  Role : ${role}` : role}
       ].filter(f => f.value);
 
       let extraHTML = "";
@@ -249,7 +228,6 @@
             <span class="username">${displayName}</span>
             ${!createdBy ? `<span class="user-role">${role}</span>` : ""}
           </div>
-          <div class="activity-description">${description}</div>
           ${extraHTML}
         </div>
         <div class="activity-time">${timestamp}</div>
@@ -290,7 +268,7 @@
         const matchesSearch = !searchTerm ||
           activity.dataset.username.includes(searchTerm) ||
           activity.dataset.eventType.toLowerCase().includes(searchTerm) ||
-          activity.querySelector('.activity-description').textContent.toLowerCase().includes(searchTerm);
+          activity.querySelector('.activity-content').textContent.toLowerCase().includes(searchTerm);
         activity.style.display = matchesSearch ? "" : "none";
         if (matchesSearch) visibleCount++;
       });
