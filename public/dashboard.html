@@ -86,6 +86,7 @@
       border-radius: 6px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
     }
     .activity-description { color: #94a3b8; font-size: 0.85rem; line-height: 1.4; }
+    .activity-role { color: #94a3b8; font-size: 0.85rem; line-height: 1.4; }
     .activity-time { color: #64748b; font-size: 0.8rem; flex-shrink: 0; text-align: right; }
     .empty-state { text-align: center; padding: 3rem 2rem; color: #64748b; }
     .empty-state svg { width: 48px; height: 48px; margin: 0 auto 1rem; opacity: 0.6; }
@@ -197,12 +198,12 @@
       const div = document.createElement("div");
       div.className = "activity-item";
       div.dataset.eventType = log.EventType || "";
-      div.dataset.role = (log.Role || "user").toLowerCase();
+      div.dataset.role = (log.Role || "")?.toLowerCase();
 
       const originalUsername = log.Username;
       const createdBy = log.createdBy || null;
       const eventType = log.EventType || "";
-      const role = log.Role || "User";
+      const role = log.Role || "";
 
       // ⬇️ تعديل العرض
       let displayName = "";
@@ -242,7 +243,7 @@
         <div class="activity-content">
           <div class="user-info">
             <span class="username">${displayName}</span>
-            ${!createdBy ? `<span class="user-role">${role}</span>` : ""}
+            ${!createdBy ? `<div class="user-role activity-role">${role}</div>` : ""}
           </div>
           ${extraHTML}
         </div>
