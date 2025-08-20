@@ -217,7 +217,8 @@ function getActionDescription(log) {
       div.dataset.eventType = log.EventType || "";
       div.dataset.role = (log.Role || "user").toLowerCase();
 
-      const originalUsername = log.Username || "Anonymous";
+      //const originalUsername = log.Username || "Anonymous";
+      const originalUsername = log.Username
       const createdBy = log.createdBy || null;
       const eventType = log.EventType || "";
       const displayName = createdBy ? `${createdBy} ${eventType}` : `${originalUsername} ${eventType}`;
