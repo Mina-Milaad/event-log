@@ -208,8 +208,7 @@
       // ⬇️ تعديل العرض
       let displayName = "";
       if (createdBy) {
-        displayName = `${createdBy} ${eventType} 
-                 Role: ${role}`;
+        displayName = `${createdBy} ${eventType}`;
       } else {
         displayName = `${originalUsername} ${eventType}`;
       }
@@ -222,6 +221,7 @@
       const timestamp = log.createdAt ? new Date(log.createdAt).toLocaleString() : "N/A";
 
       const extraFields = [
+        {label:"Role", value: log.Role},
         {label:"Endpoint", value: log.endpoint},
         {label:"IP", value: log.IpAddress},
         {label:"Local IP", value: log.localIPAddress},
@@ -230,7 +230,7 @@
         {label:"Email", value: log.Email},
         {label:"TargetDN", value: log.targetDN},
         {label:"Browser", value: log.fromSecureBrowser ? "Secure Browser" : null},
-        {label:"User Agent", value: log.userAgent}
+        {label:"User Agent", value: log.userAgent},
       ].filter(f => f.value);
 
       let extraHTML = "";
@@ -243,7 +243,7 @@
         <div class="activity-content">
           <div class="user-info">
             <div class="username">${displayName}</div>
-            ${!createdBy ? `<div class="user-role activity-role">${role}</div>` : ""}
+            
           </div>
           ${extraHTML}
         </div>
