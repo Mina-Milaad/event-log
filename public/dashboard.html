@@ -211,9 +211,12 @@
       div.className = "activity-item";
       div.dataset.eventType = log.EventType || "";
       div.dataset.role = (log.Role || "user").toLowerCase();
-      div.dataset.username = (log.Username || "Anonymous").toLowerCase();
+      // div.dataset.username = (log.Username || "Anonymous").toLowerCase();
 
-      const username = log.Username || "Anonymous";
+      const displayName = log.createdBy || log.Username || "Anonymous";
+      div.dataset.username = displayName.toLowerCase();
+
+      // const username = log.Username || "Anonymous";
       const initials = username.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
       const avatarColor = getAvatarColor(username);
       const role = log.Role || "User";
