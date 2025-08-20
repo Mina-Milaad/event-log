@@ -96,7 +96,7 @@
       .search-container { min-width: auto; }
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
       .activity-item { padding: 0.75rem 1rem; }
-      .user-info { flex-direction: column; align-items: flex-start; gap: 0.25rem; }
+      .user-info { flex-wrap: wrap; gap: 0.25rem; }
     }
   </style>
 </head>
@@ -212,15 +212,11 @@
       div.dataset.eventType = log.EventType || "";
       div.dataset.role = (log.Role || "user").toLowerCase();
 
-      // ===== Swap view when createdBy exists =====
       const originalUsername = log.Username || "Anonymous";
       const createdBy = log.createdBy || null;
-
-      // name to display on the left (avatar + big name)
       const displayName = createdBy ? createdBy : originalUsername;
       div.dataset.username = displayName.toLowerCase();
 
-      // initials + avatar color based on display name
       const initials = displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
       const avatarColor = getAvatarColor(displayName);
 
@@ -228,7 +224,6 @@
       const description = getActionDescription(log);
       const timestamp = log.createdAt ? new Date(log.createdAt).toLocaleString() : "N/A";
 
-      // Build dynamic extra fields
       const extraFields = [
         {label:"Endpoint", value: log.endpoint},
         {label:"IP", value: log.IpAddress},
@@ -237,7 +232,6 @@
         {label:"Full Username", value: log.fullUsername},
         {label:"Email", value: log.Email},
         {label:"TargetDN", value: log.targetDN},
-        // 👇 إذا كان في createdBy هنظهر سطر "User" بقيمة الـ Username الأصلي
         ...(createdBy ? [{ label: "User", value: originalUsername }] : []),
         {label:"Browser", value: log.fromSecureBrowser ? "Secure Browser" : null},
         {label:"User Agent", value: log.userAgent}
