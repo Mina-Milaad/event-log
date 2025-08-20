@@ -79,11 +79,11 @@
       font-weight: 600; font-size: 0.9rem; color: white; flex-shrink: 0;
     }
     .activity-content { flex: 1; min-width: 0; }
-    .user-info { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; flex-wrap: wrap; }
+    .user-info { display: flex; align-items: center; gap: 0.35rem; margin-bottom: 0.25rem; flex-wrap: nowrap; }
     .username { font-weight: 600; color: #f1f5f9; font-size: 0.9rem; }
     .user-role {
-      background: #8b5cf6; color: white; padding: 0.15rem 0.6rem;
-      border-radius: 8px; font-size: 0.7rem; font-weight: 500; text-transform: uppercase;
+      background: #8b5cf6; color: white; padding: 0.15rem 0.4rem;
+      border-radius: 6px; font-size: 0.7rem; font-weight: 500; text-transform: uppercase;
     }
     .activity-description { color: #94a3b8; font-size: 0.85rem; line-height: 1.4; }
     .activity-time { color: #64748b; font-size: 0.8rem; flex-shrink: 0; text-align: right; }
@@ -96,7 +96,7 @@
       .search-container { min-width: auto; }
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
       .activity-item { padding: 0.75rem 1rem; }
-      .user-info { flex-direction: column; align-items: flex-start; gap: 0.25rem; }
+      .user-info { flex-direction: row; align-items: center; gap: 0.35rem; flex-wrap: nowrap; }
     }
   </style>
 </head>
