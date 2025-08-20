@@ -236,7 +236,7 @@ function getActionDescription(log) {
         {label:"Computer", value: log.computerName},
         {label:"Full Username", value: log.fullUsername},
         {label:"Email", value: log.Email},
-        {label:"User", value: createdBy ? `${originalUsername}  Role : ${role}` : role}
+        {label:"User", value: createdBy ? `${originalUsername}  Role : ${role}` : role},
         {label:"Browser", value: log.fromSecureBrowser ? "Secure Browser" : null},
         {label:"User Agent", value: log.userAgent}
       ].filter(f => f.value);
