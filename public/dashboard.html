@@ -232,7 +232,7 @@
         {label:"Full Username", value: log.fullUsername},
         {label:"Email", value: log.Email},
         {label:"TargetDN", value: log.targetDN},
-        ...(createdBy ? [{ label: "User", value: originalUsername }] : []),
+        ...(createdBy ? [{ label: "User", value: `${originalUsername}  ${role}` }] : []),
         {label:"Browser", value: log.fromSecureBrowser ? "Secure Browser" : null},
         {label:"User Agent", value: log.userAgent}
       ].filter(f => f.value);
@@ -246,7 +246,8 @@
         <div class="user-avatar" style="background:${avatarColor}">${initials}</div>
         <div class="activity-content">
           <div class="user-info">
-            <span class="username">${displayName}</span><span class="user-role">${role}</span>
+            <span class="username">${displayName}</span>
+            ${!createdBy ? `<span class="user-role">${role}</span>` : ""}
           </div>
           <div class="activity-description">${description}</div>
           ${extraHTML}
