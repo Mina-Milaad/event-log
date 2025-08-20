@@ -232,7 +232,7 @@
         {label:"Full Username", value: log.fullUsername},
         {label:"Email", value: log.Email},
         {label:"TargetDN", value: log.targetDN},
-        ...(createdBy ? [{ label: "User", value: `${originalUsername}  ${role}` }] : []),
+        ...(createdBy ? [{ label: "User", value: `${originalUsername}  Role : ${role}` }] : []),
         {label:"Browser", value: log.fromSecureBrowser ? "Secure Browser" : null},
         {label:"User Agent", value: log.userAgent}
       ].filter(f => f.value);
