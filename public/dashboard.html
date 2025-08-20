@@ -212,26 +212,23 @@
       div.dataset.eventType = log.EventType || "";
       div.dataset.role = (log.Role || "user").toLowerCase();
 
-      // لو في createdBy -> يبان مكان username والعكس
-      let username = log.Username || "Anonymous";
-      let createdBy = log.createdBy;
+      // ===== Swap view when createdBy exists =====
+      const originalUsername = log.Username || "Anonymous";
+      const createdBy = log.createdBy || null;
 
-      let displayName = username;
-      let swappedCreatedBy = createdBy;
-
-      if (createdBy) {
-        displayName = createdBy;
-        swappedCreatedBy = username;
-      }
-
+      // name to display on the left (avatar + big name)
+      const displayName = createdBy ? createdBy : originalUsername;
       div.dataset.username = displayName.toLowerCase();
 
+      // initials + avatar color based on display name
       const initials = displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
       const avatarColor = getAvatarColor(displayName);
+
       const role = log.Role || "User";
       const description = getActionDescription(log);
       const timestamp = log.createdAt ? new Date(log.createdAt).toLocaleString() : "N/A";
 
+      // Build dynamic extra fields
       const extraFields = [
         {label:"Endpoint", value: log.endpoint},
         {label:"IP", value: log.IpAddress},
@@ -240,7 +237,8 @@
         {label:"Full Username", value: log.fullUsername},
         {label:"Email", value: log.Email},
         {label:"TargetDN", value: log.targetDN},
-        {label:"Created By", value: swappedCreatedBy},
+        // 👇 إذا كان في createdBy هنظهر سطر "User" بقيمة الـ Username الأصلي
+        ...(createdBy ? [{ label: "User", value: originalUsername }] : []),
         {label:"Browser", value: log.fromSecureBrowser ? "Secure Browser" : null},
         {label:"User Agent", value: log.userAgent}
       ].filter(f => f.value);
