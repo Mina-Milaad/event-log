@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  app:
+    volumes:
+      - ./event:/usr/src/app/event
+      - ./public:/usr/src/app/public
+    command: node index.js
+
+    environment:
+      - NODE_ENV=development
+    ports:
+      - "8050:5000"
