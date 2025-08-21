@@ -32,13 +32,13 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
-// // محلي زي السيرفر
-// if (process.env.NODE_ENV === "development") {
-//   app.use("/event", express.static(path.join(__dirname, "public")));
-//   app.get("/event", (req, res) => {
-//     res.sendFile(path.join(__dirname, "public", "dashboard.html"));
-//   });
-// }
+// محلي زي السيرفر
+if (process.env.NODE_ENV === "development") {
+  app.use("/event", express.static(path.join(__dirname, "public")));
+  app.get("/event", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "dashboard.html"));
+  });
+}
 
 
 app.use( express.static(path.join(__dirname, "public")));
@@ -49,4 +49,4 @@ io.on("connection", (socket) => {
 });
 
 
-server.listen(port, () => console.log(`Example app listening on port ${port}!`))
+server.listen(port, "0.0.0.0",() => console.log(`Example app listening on port ${port}!`))
