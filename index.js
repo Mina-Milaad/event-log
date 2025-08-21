@@ -32,20 +32,20 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
-// محلي زي السيرفر
-if (process.env.NODE_ENV === "development") {
-  app.use("/event", express.static(path.join(__dirname, "public")));
-  app.get("/event", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "dashboard.html"));
-  });
-}
+// // محلي زي السيرفر
+// if (process.env.NODE_ENV === "development") {
+//   app.use("/event", express.static(path.join(__dirname, "public")));
+//   app.get("/event", (req, res) => {
+//     res.sendFile(path.join(__dirname, "public", "dashboard.html"));
+//   });
+// }
 
 
 app.use( express.static(path.join(__dirname, "public")));
 
 io.on("connection", (socket) => {
   console.log("New client connected:", socket.id);
-  socket.on("disconnect",  "0.0.0.0",() => console.log("Client disconnected:", socket.id));
+  socket.on("disconnect",  () => console.log("Client disconnected:", socket.id));
 });
 
 
