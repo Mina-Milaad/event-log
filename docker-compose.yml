@@ -10,6 +10,8 @@ services:
       - mongo
     environment:
       - NODE_ENV=production
+    volumes:
+      - ./event:/usr/src/app/event   # 👈 mount your local folder
     restart: always
 
   mongo:
