@@ -173,17 +173,21 @@
        window.location.href = "login.html";
     }
 
-   let apiBase = "";
-    if (location.hostname === "localhost") {
-      apiBase = "http://localhost:8050"; // لو محلي
-    } else {
-      apiBase = "/event"; // لو سيرفر
-    }
+  //  let apiBase = "";
+  //   if (location.hostname === "localhost") {
+  //     apiBase = "http://localhost:8050"; // لو محلي
+  //   } else {
+  //     apiBase = "/event"; // لو سيرفر
+  //   }
+
+    const apiBase = "https://gnsdevops.s-badge.com/event";
 
     // إعداد socket.io
-    const socket = location.hostname === "localhost"
-      ? io("http://localhost:8050")
-      : io("/", { path: "/event/socket.io" });
+    // const socket = location.hostname === "localhost"
+    //   ? io("http://localhost:8050")
+    //   : io("/", { path: "/event/socket.io" });
+
+      const socket = io("https://gnsdevops.s-badge.com", { path: "/event/socket.io" });
 
   //   let socket;
   //   if (location.hostname === "localhost") {
