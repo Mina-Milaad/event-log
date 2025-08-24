@@ -169,7 +169,17 @@
        window.location.href = "login.html";
     }
 
-    const socket = io("/", { path: "/event/socket.io" });
+    //const socket = io("/", { path: "/event/socket.io" });
+
+    let socket;
+    if (location.hostname === "localhost") {
+  // محلي
+     socket = io("http://localhost:8050"); // الـ default path /socket.io شغال هنا
+    } else {
+  // سيرفر production وراه nginx
+     socket = io("/", { path: "/event/socket.io" });
+   }
+
     socket.on("eventLog", (log) => {
       addActivityToTop(log);
       updateStats();
@@ -292,22 +302,48 @@
       entriesCountEl.textContent = `${visibleCount} entries found`;
     }
 
+    // async function loadRecent() {
+    //   try {
+    //     const res = await fetch("/event/api/logs?limit=50");
+    //     const json = await res.json();
+    //     if (json.ok && json.logs.length > 0) {
+    //       const emptyState = activityListEl.querySelector('.empty-state');
+    //       if (emptyState) emptyState.remove();
+    //       json.logs.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt))
+    //         .forEach(l => activityListEl.appendChild(renderActivity(l)));
+    //       updateStats();
+    //       applyFilters();
+    //     }
+    //   } catch (err) {
+    //     console.error("Failed to load recent logs:", err);
+    //   }
+    // }
+
+
     async function loadRecent() {
-      try {
-        const res = await fetch("/event/api/logs?limit=50");
-        const json = await res.json();
-        if (json.ok && json.logs.length > 0) {
-          const emptyState = activityListEl.querySelector('.empty-state');
-          if (emptyState) emptyState.remove();
-          json.logs.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt))
-            .forEach(l => activityListEl.appendChild(renderActivity(l)));
-          updateStats();
-          applyFilters();
-        }
-      } catch (err) {
-        console.error("Failed to load recent logs:", err);
-      }
+  try {
+    let apiBase = "";
+    if (location.hostname === "localhost") {
+      apiBase = "http://localhost:8050";
+    } else {
+      apiBase = "/event";
     }
+
+    const res = await fetch(`${apiBase}/api/logs?limit=50`);
+    const json = await res.json();
+    if (json.ok && json.logs.length > 0) {
+      const emptyState = activityListEl.querySelector('.empty-state');
+      if (emptyState) emptyState.remove();
+      json.logs.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt))
+        .forEach(l => activityListEl.appendChild(renderActivity(l)));
+      updateStats();
+      applyFilters();
+    }
+  } catch (err) {
+    console.error("Failed to load recent logs:", err);
+  }
+}
+
 
     searchInput.addEventListener("input", applyFilters);
     loadRecent();
