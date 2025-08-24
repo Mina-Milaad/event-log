@@ -3,10 +3,9 @@ version: "3.8"
 services:
   app:
     volumes:
-      - ./event:/usr/src/app/event
-      - ./public:/usr/src/app/public
-    command: node index.js
-
+      - .:/app                # 👈 اربط المشروع كله
+      - /app/node_modules     # 👈 علشان مايحصلش conflict بين node_modules بتوعك واللي جوة الكونتينر
+    command: npx nodemon index.js
     environment:
       - NODE_ENV=development
     ports:
