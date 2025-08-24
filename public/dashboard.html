@@ -177,7 +177,7 @@
      socket = io("http://localhost:8050"); // الـ default path /socket.io شغال هنا
     } else {
   // سيرفر production وراه nginx
-     socket = io("/", { path: "/event/socket.io" });
+     socket = io();
    }
      //socket = io("/", { path: "/event/socket.io" });
 
