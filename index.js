@@ -36,13 +36,13 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
-// محلي زي السيرفر
-if (process.env.NODE_ENV === "development") {
-  app.use("/event", express.static(path.join(__dirname, "public")));
-  app.get("/event", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "dashboard.html"));
-  });
-}
+// // محلي زي السيرفر
+// if (process.env.NODE_ENV === "development") {
+//   app.use("/event", express.static(path.join(__dirname, "public")));
+//   app.get("/event", (req, res) => {
+//     res.sendFile(path.join(__dirname, "public", "dashboard.html"));
+//   });
+//}
 
 
 app.use( express.static(path.join(__dirname, "public")));

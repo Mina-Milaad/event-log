@@ -177,7 +177,7 @@
      socket = io("http://localhost:8050"); // الـ default path /socket.io شغال هنا
     } else {
   // سيرفر production وراه nginx
-     socket = io();
+     socket = io("/", { path: "/event/socket.io" });
    }
      //socket = io("/", { path: "/event/socket.io" });
 
@@ -324,12 +324,13 @@
     async function loadRecent() {
   try {
     let apiBase = "";
-    if (location.hostname === "localhost") {
-      apiBase = "http://localhost:8050";
-    } else {
+    if (location.hostname === "gnsdevops.s-badge.com") {
       apiBase = "/event";
+    } else {
+      apiBase = "/";
     }
     //apiBase = "/event"; // force path for both local and production
+    //http://localhost:8050
 
     const res = await fetch(`${apiBase}/api/logs?limit=50`);
     const json = await res.json();
