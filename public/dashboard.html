@@ -179,6 +179,7 @@
   // سيرفر production وراه nginx
      socket = io("/", { path: "/event/socket.io" });
    }
+     //socket = io("/", { path: "/event/socket.io" });
 
     socket.on("eventLog", (log) => {
       addActivityToTop(log);
@@ -326,8 +327,9 @@
     if (location.hostname === "localhost") {
       apiBase = "http://localhost:8050";
     } else {
-      apiBase = "/event";
+      apiBase = "";
     }
+    //apiBase = "/event"; // force path for both local and production
 
     const res = await fetch(`${apiBase}/api/logs?limit=50`);
     const json = await res.json();

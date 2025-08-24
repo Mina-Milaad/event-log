@@ -16,10 +16,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
-// const io = new Server(server, { 
-//   cors: { origin: "*" },
-//   path: "/event/socket.io"
-// });
+
 
 
 const port = 5000;
@@ -34,6 +31,7 @@ app.use((req, res, next) => {
 bootstrap(app)
 
 app.use("/event", express.static(path.join(__dirname, "public")));
+app.use("/", express.static(path.join(__dirname, "public")));
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
