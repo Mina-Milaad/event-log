@@ -14,12 +14,12 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 const server = http.createServer(app);
-//const io = new Server(server, { cors: { origin: "*" } });
+const io = new Server(server, { cors: { origin: "*" } });
 
-const io = new Server(server, { 
-  cors: { origin: "*" },
-  path: "/event/socket.io"
-});
+// const io = new Server(server, { 
+//   cors: { origin: "*" },
+//   path: "/event/socket.io"
+// });
 
 
 const port = 5000;
