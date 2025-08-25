@@ -165,43 +165,44 @@
 
   <!-- <script src="/event/socket.io/socket.io.js"></script> -->
 
-  <script src="/event/socket.io/socket.io.js"></script>
+  <!-- <script src="/socket.io/socket.io.js"></script> -->
+
+
   <script>
+  const isLocal = window.location.hostname === "localhost";
+
+  const socketScript = document.createElement("script");
+  socketScript.src = isLocal
+    ? "/socket.io/socket.io.js"
+    : "/event/socket.io/socket.io.js";
+
+  document.head.appendChild(socketScript);
+</script>
+
+  <script>
+
+    socketScript.onload = () => {
     const token = localStorage.getItem("token");
     const roles = JSON.parse(localStorage.getItem("roles") || "[]");
     if (!token || !roles.includes("Admin")) {
        window.location.href = "login.html";
     }
 
-  //  let apiBase = "";
-  //   if (location.hostname === "localhost") {
-  //     apiBase = "http://localhost:8050"; // لو محلي
-  //   } else {
-  //     apiBase = "/event"; // لو سيرفر
-  //   }
+ 
 
     const apiBase = "https://gnsdevops.s-badge.com/event";
 
-    // إعداد socket.io
-    // const socket = location.hostname === "localhost"
-    //   ? io("http://localhost:8050")
-    //   : io("/", { path: "/event/socket.io" });
 
       const socket = io("https://gnsdevops.s-badge.com", { path: "/event/socket.io" });
 
-  //   let socket;
-  //   if (location.hostname === "localhost") {
-  //    socket = io("http://localhost:8050"); // الـ default path /socket.io شغال هنا
-  //   } else {
-  //    socket = io("/", { path: "/event/socket.io" });
-  //  }
-     //socket = io("/", { path: "/event/socket.io" });
+  
+
 
     socket.on("eventLog", (log) => {
       addActivityToTop(log);
       updateStats();
     });
-
+  
     const activityListEl = document.getElementById("activityList");
     const searchInput = document.getElementById("searchInput");
     const entriesCountEl = document.getElementById("entriesCount");
@@ -319,50 +320,7 @@
       entriesCountEl.textContent = `${visibleCount} entries found`;
     }
 
-    // async function loadRecent() {
-    //   try {
-    //     const res = await fetch("/event/api/logs?limit=50");
-    //     const json = await res.json();
-    //     if (json.ok && json.logs.length > 0) {
-    //       const emptyState = activityListEl.querySelector('.empty-state');
-    //       if (emptyState) emptyState.remove();
-    //       json.logs.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt))
-    //         .forEach(l => activityListEl.appendChild(renderActivity(l)));
-    //       updateStats();
-    //       applyFilters();
-    //     }
-    //   } catch (err) {
-    //     console.error("Failed to load recent logs:", err);
-    //   }
-    // }
-
-
-//     async function loadRecent() {
-//   try {
-//     let apiBase = "";
-//     if (location.hostname === "gnsdevops.s-badge.com") {
-//       apiBase = "/event";
-//     } else {
-//       apiBase = "/";
-//     }
-//     //apiBase = "/event"; // force path for both local and pr
-//     //http://localhost:8050
-
-//     const res = await fetch(`${apiBase}/api/logs?limit=50`);
-//     const json = await res.json();
-//     if (json.ok && json.logs.length > 0) {
-//       const emptyState = activityListEl.querySelector('.empty-state');
-//       if (emptyState) emptyState.remove();
-//       json.logs.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt))
-//         .forEach(l => activityListEl.appendChild(renderActivity(l)));
-//       updateStats();
-//       applyFilters();
-//     }
-//   } catch (err) {
-//     console.error("Failed to load recent logs:", err);
-//   }
-// }
-
+    
 async function loadRecent() {
       try {
         const res = await fetch(`${apiBase}/api/logs?limit=50`);
@@ -388,6 +346,7 @@ async function loadRecent() {
       localStorage.removeItem("roles");
       window.location.href = "login.html";
     });
+  }; // end of socketScript.onload
   </script>
 </body>
 </html>
