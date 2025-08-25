@@ -10,25 +10,68 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 0. Checkout
       - name: 🔄 Checkout repo
         uses: actions/checkout@v3
 
+      # 1. Secrets Scanning
+      - name: 🔐 Run Gitleaks (Secrets Scan)
+        uses: gitleaks/gitleaks-action@v2
+        with:
+          args: detect --source . --no-git -v
+
+      # 2. Static Code Analysis (SAST)
+      - name: 🛡️ Run Semgrep (SAST)
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: "p/ci"
+
+      # 3. Dependency Security (SCA) - Snyk
+      - name: 🧩 Run Snyk to check for vulnerabilities
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      # 4. Set up Docker Buildx
       - name: 🐳 Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      # 5. Login to DockerHub
       - name: 🔐 Login to DockerHub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: 📦 Build and Push Docker image
+      # 6. Build Docker Image (without pushing yet)
+      - name: 📦 Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: mybyelias/event-log:latest
+
+      # 7. Scan Docker Image (Trivy)
+      - name: 🔍 Scan Docker image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: "mybyelias/event-log:latest"
+          format: "json"
+          output: "trivy-report.json"
+          exit-code: "1"          # يفشل لو فيه CRITICAL فقط
+          vuln-type: "os,library"
+          severity: "CRITICAL"    # ignore HIGH, only CRITICAL triggers fail
+
+      # 8. Push Docker Image (only if scans passed)
+      - name: 📤 Push Docker image
+        if: success()
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
           tags: mybyelias/event-log:latest
 
+      # 9. Deploy on remote server via SSH
       - name: 🚀 Deploy on remote server via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
