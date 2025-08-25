@@ -1,27 +1,29 @@
-FROM node:20-slim
+# Stage 1: Build
+FROM node:20-alpine AS build
 
-# تحديث npm
-RUN npm install -g npm@10
-
-# تحديث النظام وحزم أساسية فقط
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        git \
-        imagemagick \
-        libpq-dev \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+# تثبيت أدوات البناء اللازمة لـ bcrypt
+RUN apk add --no-cache python3 make g++ bash
 
 WORKDIR /app
 
-# نسخ ملفات npm
-COPY package.json package-lock.json ./
+# نسخ ملفات الباكيج
+COPY package*.json ./
 
-# تثبيت الحزم من lockfile (بدون dev)
+# تثبيت الـ npm packages (بما فيها bcrypt)
 RUN npm ci --omit=dev
 
-# نسخ باقي ملفات المشروع
+# نسخ باقي المشروع
 COPY . .
+
+# Stage 2: Runtime
+FROM node:20-alpine
+
+WORKDIR /app
+
+# نسخ node_modules المبنية من المرحلة الأولى
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/package*.json ./
+COPY --from=build /app ./
 
 EXPOSE 5000
 CMD ["node", "index.js"]
