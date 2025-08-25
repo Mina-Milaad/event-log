@@ -55,7 +55,7 @@ jobs:
       - name: 🔍 Scan Docker image with Trivy
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: "mybyelias/log:latest"
+          image-ref: "mybyelias/event-log:latest"
           format: "json"
           output: "trivy-report.json"
           exit-code: "1"          # يفشل لو فيه CRITICAL فقط
