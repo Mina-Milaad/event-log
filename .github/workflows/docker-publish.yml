@@ -65,10 +65,17 @@ jobs:
 
       # 7.1 Show Trivy report in logs (pretty print)
       - name: 📜 Show Trivy scan results
-        if: always()   # دا مهم علشان يتنفذ حتى لو Trivy فشل
+        if: always()
         run: |
           echo "====== Trivy Scan Report ======"
-          cat trivy-report.json | jq '.Results[].Vulnerabilities[] | {VulnerabilityID, PkgName, InstalledVersion, FixedVersion, Severity, Title}'
+          jq -r '
+            .Results[]
+            | select(.Vulnerabilities != null)
+            | .Vulnerabilities[]
+            | [.Severity, .PkgName, .InstalledVersion, .FixedVersion, .VulnerabilityID, .Title]
+            | @tsv
+          ' trivy-report.json \
+          | column -t -s $'\t'
       
       # 7.2 Upload report as artifact
       - name: 📤 Upload Trivy scan report
