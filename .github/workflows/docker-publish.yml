@@ -62,6 +62,13 @@ jobs:
           vuln-type: "os,library"
           severity: "CRITICAL"    # ignore HIGH, only CRITICAL triggers fail
 
+      # 7.1 رفع تقرير Trivy كـ artifact
+      - name: 📤 Upload Trivy scan report
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-report
+          path: trivy-report.json
+
       # 8. Push Docker Image (only if scans passed)
       - name: 📤 Push Docker image
         if: success()
