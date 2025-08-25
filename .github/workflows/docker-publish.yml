@@ -53,14 +53,14 @@ jobs:
 
       # 7. Scan Docker Image (Trivy)
       - name: 🔍 Scan Docker image with Trivy
+        continue-on-error: true   # <<< يخلي الخطوة تكمل حتى لو فيه ثغرات
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: "mybyelias/event-log:latest"
           format: "json"
           output: "trivy-report.json"
-          exit-code: "1"          # يفشل لو فيه CRITICAL فقط
           vuln-type: "os,library"
-          severity: "CRITICAL"    # ignore HIGH, only CRITICAL triggers fail
+          severity: "CRITICAL"
 
       # 7.1 رفع تقرير Trivy كـ artifact
       - name: 📤 Upload Trivy scan report
@@ -68,6 +68,14 @@ jobs:
         with:
           name: trivy-report
           path: trivy-report.json
+
+      # 7.2 افشل لو فيه ثغرات CRITICAL
+      - name: ❌ Fail if vulnerabilities found
+        run: |
+          if grep -q '"Severity":"CRITICAL"' trivy-report.json; then
+            echo "❗ CRITICAL vulnerabilities detected!"
+            exit 1
+          fi
 
       # 8. Push Docker Image (only if scans passed)
       - name: 📤 Push Docker image
